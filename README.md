@@ -1,5 +1,5 @@
-Aapki script ke liye ye raha ek complete aur professional README.md. Aap is poore text ko copy karke apne project ki README.md file mein save kar sakte hain.
-🚀 Multi-Panel & Addons Installer (2026)
+
+***🚀 Multi-Panel & Addons Installer (2026)
 Yeh ek power-packed automation script hai jo Pterodactyl, Wings, Convoy, aur Blueprint Addons ko install aur manage karne ke liye banayi gayi hai. Is script ka maksad installation process ko fast aur error-free banana hai.
 📋 Features
  * Pterodactyl Panel: Full game management dashboard installation.
@@ -20,7 +20,7 @@ Yeh ek power-packed automation script hai jo Pterodactyl, Wings, Convoy, aur Blu
 🚀 How to Install & Run
 Apne VPS terminal par niche diye gaye steps follow karein:
 # 1. cmd
-
+bash <(curl -s https://github.com/shadowplayzz44-max/Allpanel.git
 
 📖 Menu Options Explained
 | Option | Function | Important Note |
@@ -37,4 +37,4 @@ Apne VPS terminal par niche diye gaye steps follow karein:
  * Database: Convoy panel ke liye database credentials .env file mein manually update karni hogi.
 📞 Support & Updates
 Yeh script 2026 ke latest versions ko support karti hai. Agar koi error aaye, toh check karein ki aapka PHP aur Docker version up-to-date hai ya nahi.
-Kya aapko is README mein "Troubleshooting" (Errors fix karne ka) section bhi chahiye?
+Kya aapko is README mein "Troubleshooting" (Errors fix karne ka) section bhi chahiye?***
