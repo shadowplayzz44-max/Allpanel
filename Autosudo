@@ -1,0 +1,48 @@
+```bash
+#!/bin/bash
+
+# Colors
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+CYAN="\e[36m"
+WHITE="\e[37m"
+BOLD="\e[1m"
+RESET="\e[0m"
+
+CONFIG_FILE="/etc/ssh/sshd_config"
+
+echo -e "${CYAN}${BOLD}🔐 Enabling Root Login via SSH...${RESET}\n"
+
+# Step 1: Backup original config
+echo -e "${YELLOW}📦 Backing up current SSH config...${RESET}"
+cp "$CONFIG_FILE" "${CONFIG_FILE}.bak"
+echo -e "${GREEN}✅ Backup created at ${WHITE}${CONFIG_FILE}.bak${RESET}\n"
+
+# Step 2: Enable PermitRootLogin yes
+echo -e "${YELLOW}📝 Enabling root login permission...${RESET}"
+sed -i 's/^#PermitRootLogin.*/PermitRootLogin yes/' "$CONFIG_FILE"
+grep -q "^PermitRootLogin" "$CONFIG_FILE" || echo "PermitRootLogin yes" >> "$CONFIG_FILE"
+echo -e "${GREEN}✅ PermitRootLogin enabled!${RESET}\n"
+
+# Step 3: Handle PasswordAuthentication variations
+echo -e "${YELLOW}🔧 Enabling password authentication...${RESET}"
+sed -i '/^#PasswordAuthentication/d' "$CONFIG_FILE"
+sed -i '/^PasswordAuthentication/d' "$CONFIG_FILE"
+echo "PasswordAuthentication yes" >> "$CONFIG_FILE"
+echo -e "${GREEN}✅ PasswordAuthentication set to YES${RESET}\n"
+
+# Step 4: Restart SSH service
+echo -e "${YELLOW}🚀 Restarting SSH service...${RESET}"
+systemctl restart ssh
+echo -e "${GREEN}✅ SSH service restarted successfully!${RESET}\n"
+
+# Step 5: Prompt user to set root password
+echo -e "${BOLD}${CYAN}⚙️ Final Step:${RESET}"
+echo -e "${WHITE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${YELLOW}👉 Now set your root password manually.${RESET}"
+echo -e "${GREEN}💡 Run this command:${RESET} ${BOLD}${WHITE}sudo passwd root${RESET}"
+echo -e "${WHITE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
+
+echo -e "${GREEN}${BOLD}🎉 All done! Root login via SSH is now enabled.${RESET}"
+```
