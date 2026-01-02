@@ -1,5 +1,5 @@
 
-***🚀 Multi-Panel & Addons Installer (2026)
+🚀 Multi-Panel & Addons Installer (2026)
 Yeh ek power-packed automation script hai jo Pterodactyl, Wings, Convoy, aur Blueprint Addons ko install aur manage karne ke liye banayi gayi hai. Is script ka maksad installation process ko fast aur error-free banana hai.
 📋 Features
  * Pterodactyl Panel: Full game management dashboard installation.
@@ -20,7 +20,7 @@ Yeh ek power-packed automation script hai jo Pterodactyl, Wings, Convoy, aur Blu
 🚀 How to Install & Run
 Apne VPS terminal par niche diye gaye steps follow karein:
 # 1. cmd
-bash <(curl -s https://github.com/shadowplayzz44-max/Allpanel.git
+bash <(curl -s https://github.com/shadowplayzz44-max/Allpanel/main/All.sh
 
 📖 Menu Options Explained
 | Option | Function | Important Note |
