@@ -18,10 +18,7 @@ Yeh ek power-packed automation script hai jo Pterodactyl, Wings, Convoy, aur Blu
  * Resources: Minimum 2GB RAM & 2 vCores.
  * Domain: Subdomains pointed to your Server IP.
 🚀 How to Install & Run
-Apne VPS terminal par niche diye gaye steps follow karein:
-# 1. cmd
-```bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/All.sh)
-
+Apne VPS terminal par niche diye gaye steps follow kare
 
 📖 Menu Options Explained
 | Option | Function | Important Note |
@@ -39,3 +36,4 @@ Apne VPS terminal par niche diye gaye steps follow karein:
 📞 Support & Updates
 Yeh script 2026 ke latest versions ko support karti hai. Agar koi error aaye, toh check karein ki aapka PHP aur Docker version up-to-date hai ya nahi.
 Kya aapko is README mein "Troubleshooting" (Errors fix karne ka) section bhi chahiye?***
+#cmd ```bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/All.sh)
