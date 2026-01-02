@@ -1,0 +1,96 @@
+#!/bin/bash
+set -e
+
+###################################################
+# 🗑 MythicalDash Uninstaller
+# 👑 Powered By shadow
+###################################################
+
+clear
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🗑 MythicalDash Uninstaller"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+#############################
+# 🔒 ROOT CHECK
+#############################
+if [ "$EUID" -ne 0 ]; then
+  echo "❌ Please run as root"
+  exit 1
+fi
+
+#############################
+# ⚠️ CONFIRMATION
+#############################
+read -p "⚠️ This will COMPLETELY remove MythicalDash. Continue? (yes/no): " CONFIRM
+if [[ "$CONFIRM" != "yes" ]]; then
+  echo "❌ Uninstall cancelled"
+  exit 0
+fi
+
+#############################
+# 📁 PATHS
+#############################
+INSTALL_DIR="/var/www/mythicaldash-v3"
+NGINX_CONF="/etc/nginx/sites-available/mythicaldash.conf"
+SSL_DIR="/etc/certs/MythicalDash"
+DB="mythicaldash_remastered"
+DB_USER="mythicaldash_remastered"
+
+#############################
+# 🧹 STOP SERVICES
+#############################
+echo "🛑 Stopping services..."
+systemctl stop nginx || true
+systemctl stop php8.3-fpm || true
+
+#############################
+# 🗄 DATABASE REMOVAL
+#############################
+echo "🗄 Removing database..."
+mysql <<EOF
+DROP DATABASE IF EXISTS $DB;
+DROP USER IF EXISTS '$DB_USER'@'localhost';
+DROP USER IF EXISTS '$DB_USER'@'127.0.0.1';
+FLUSH PRIVILEGES;
+EOF
+
+#############################
+# 📁 REMOVE FILES
+#############################
+echo "📁 Removing panel files..."
+rm -rf $INSTALL_DIR
+
+#############################
+# 🌐 REMOVE NGINX CONFIG
+#############################
+echo "🌐 Removing Nginx config..."
+rm -f $NGINX_CONF
+rm -f /etc/nginx/sites-enabled/mythicaldash.conf
+
+#############################
+# 🔐 REMOVE SSL
+#############################
+echo "🔐 Removing SSL certificates..."
+rm -rf $SSL_DIR
+
+#############################
+# ⏱ REMOVE CRON JOBS
+#############################
+echo "⏱ Removing cron jobs..."
+crontab -l 2>/dev/null | grep -v mythicaldash | crontab -
+
+#############################
+# 🔄 RELOAD SERVICES
+#############################
+systemctl start php8.3-fpm || true
+nginx -t && systemctl reload nginx || true
+
+#############################
+# ✅ DONE
+#############################
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ MythicalDash has been COMPLETELY removed"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
