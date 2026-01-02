@@ -1,0 +1,211 @@
+#!/bin/bash
+set -e
+
+###################################################
+# 🚀 MythicalDash Professional Installer
+# 👑 Powered By Para | Hardened & Production Ready
+###################################################
+
+clear
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🔥 MythicalDash Professional Installer"
+echo "✨ Powered By shadow"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+#############################
+# 🔒 ROOT CHECK
+#############################
+if [ "$EUID" -ne 0 ]; then
+  echo "❌ Please run as root"
+  exit 1
+fi
+
+#############################
+# 🌍 DOMAIN INPUT
+#############################
+read -p "🌍 Enter your domain (panel.example.com): " DOMAIN
+if [[ -z "$DOMAIN" ]]; then
+  echo "❌ Domain cannot be empty"
+  exit 1
+fi
+
+echo "✅ Domain set to: $DOMAIN"
+sleep 1
+
+#############################
+# 🧪 OS DETECTION
+#############################
+. /etc/os-release
+if [[ "$ID" != "ubuntu" && "$ID" != "debian" ]]; then
+  echo "❌ Only Ubuntu / Debian supported"
+  exit 1
+fi
+
+#############################
+# 📦 SYSTEM UPDATE
+#############################
+echo "📦 Updating system..."
+apt update -y && apt upgrade -y
+
+#############################
+# 📦 DEPENDENCIES
+#############################
+echo "📦 Installing dependencies..."
+apt install -y software-properties-common curl ca-certificates gnupg lsb-release unzip git redis-server cron make dos2unix screen openssl nginx mariadb-server
+
+#############################
+# 🐘 PHP 8.3
+#############################
+if [[ "$ID" == "ubuntu" ]]; then
+  add-apt-repository -y ppa:ondrej/php
+else
+  curl -fsSL https://packages.sury.org/php/apt.gpg | gpg --dearmor -o /usr/share/keyrings/php.gpg
+  echo "deb [signed-by=/usr/share/keyrings/php.gpg] https://packages.sury.org/php/ $VERSION_CODENAME main" \
+  > /etc/apt/sources.list.d/php.list
+fi
+
+apt update -y
+apt install -y php8.3 php8.3-{cli,fpm,common,gd,mysql,mbstring,bcmath,xml,curl,zip,redis}
+
+systemctl enable --now cron redis-server mariadb php8.3-fpm
+
+#############################
+# 🎼 COMPOSER
+#############################
+if ! command -v composer &>/dev/null; then
+  echo "🎼 Installing Composer..."
+  curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+fi
+
+#############################
+# 📥 PANEL FILES
+#############################
+echo "📥 Installing MythicalDash..."
+INSTALL_DIR="/var/www/mythicaldash-v3"
+rm -rf $INSTALL_DIR
+mkdir -p $INSTALL_DIR
+cd $INSTALL_DIR
+
+curl -Lo MythicalDash.zip https://github.com/MythicalLTD/MythicalDash/releases/latest/download/MythicalDash.zip
+unzip MythicalDash.zip
+rm MythicalDash.zip
+
+chown -R www-data:www-data $INSTALL_DIR
+
+#############################
+# 📦 BACKEND DEPENDENCIES
+#############################
+cd backend
+COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
+
+#############################
+# 🗄 DATABASE SETUP (FIXED)
+#############################
+DB="mythicaldash_remastered"
+DB_USER="mythicaldash_remastered"
+DB_PASS=$(openssl rand -base64 16)
+
+echo "🗄 Setting up database..."
+
+mysql <<EOF
+DROP DATABASE IF EXISTS $DB;
+DROP USER IF EXISTS '$DB_USER'@'localhost';
+DROP USER IF EXISTS '$DB_USER'@'127.0.0.1';
+
+CREATE DATABASE $DB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';
+CREATE USER '$DB_USER'@'127.0.0.1' IDENTIFIED BY '$DB_PASS';
+
+GRANT ALL PRIVILEGES ON $DB.* TO '$DB_USER'@'localhost';
+GRANT ALL PRIVILEGES ON $DB.* TO '$DB_USER'@'127.0.0.1';
+FLUSH PRIVILEGES;
+EOF
+
+echo "✅ Database created"
+echo "🔑 DB Password: $DB_PASS"
+
+#############################
+# ⚙ PRODUCTION BUILD
+#############################
+cd $INSTALL_DIR
+make set-prod
+
+#############################
+# ⏱ CRON JOBS
+#############################
+(crontab -l 2>/dev/null | grep -v mythicaldash; echo "* * * * * bash $INSTALL_DIR/backend/storage/cron/runner.bash >/dev/null 2>&1") | crontab -
+
+#############################
+# 🔐 SSL (SELF-SIGNED)
+#############################
+SSL_DIR="/etc/certs/MythicalDash"
+mkdir -p $SSL_DIR
+openssl req -x509 -nodes -days 3650 -newkey rsa:4096 \
+  -subj "/CN=$DOMAIN" \
+  -keyout $SSL_DIR/privkey.pem \
+  -out $SSL_DIR/fullchain.pem
+
+#############################
+# 🌐 NGINX CONFIG
+#############################
+NGINX_CONF="/etc/nginx/sites-available/mythicaldash.conf"
+
+cat > $NGINX_CONF <<EOF
+server {
+  listen 80;
+  server_name $DOMAIN;
+  return 301 https://\$host\$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name $DOMAIN;
+
+  root $INSTALL_DIR/frontend/dist;
+  index index.html;
+
+  ssl_certificate $SSL_DIR/fullchain.pem;
+  ssl_certificate_key $SSL_DIR/privkey.pem;
+
+  location / {
+    try_files \$uri \$uri/ /index.html;
+  }
+
+  location /api {
+    proxy_pass http://127.0.0.1:6000;
+    proxy_set_header Host \$host;
+    proxy_set_header X-Real-IP \$remote_addr;
+  }
+
+  location ~ \.php$ {
+    include fastcgi_params;
+    fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+    fastcgi_param SCRIPT_FILENAME $INSTALL_DIR/backend/public\$fastcgi_script_name;
+  }
+}
+EOF
+
+ln -sf $NGINX_CONF /etc/nginx/sites-enabled/mythicaldash.conf
+rm -f /etc/nginx/sites-enabled/default
+
+nginx -t
+systemctl reload nginx
+
+#############################
+# 👤 ADMIN USER
+#############################
+cd $INSTALL_DIR
+php mythicaldash makeAdmin
+
+#############################
+# 🎉 FINISH
+#############################
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🎉 MythicalDash Installed Successfully!"
+echo "🔗 URL: https://$DOMAIN"
+echo "🗄 Database: $DB"
+echo "👤 DB User: $DB_USER"
+echo "🔑 DB Pass: $DB_PASS"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
