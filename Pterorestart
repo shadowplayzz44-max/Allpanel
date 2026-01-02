@@ -1,0 +1,24 @@
+#!/bin/bash
+# ==============================================
+# 🔄 Pterodactyl Panel & Wings Restart
+# ==============================================
+
+set -e
+
+echo "⚡ === Restarting Pterodactyl Panel ==="
+sudo systemctl restart pteroq.service
+sleep 2
+
+echo "⚡ === Restarting Wings (Daemon) ==="
+sudo systemctl restart wings
+sleep 2
+
+echo "📝 === Checking Status ==="
+echo "📌 Panel:"
+sudo systemctl status pteroq.service --no-pager | head -n 10
+echo ""
+echo "📌 Wings:"
+sudo systemctl status wings --no-pager | head -n 10
+
+echo "✅🎉 Pterodactyl Panel & Wings restarted successfully!"
+echo "✨ Made with ❤️ by Shadow ✨"
