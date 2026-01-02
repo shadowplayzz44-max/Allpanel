@@ -36,4 +36,6 @@ Apne VPS terminal par niche diye gaye steps follow kare
 📞 Support & Updates
 Yeh script 2026 ke latest versions ko support karti hai. Agar koi error aaye, toh check karein ki aapka PHP aur Docker version up-to-date hai ya nahi.
 Kya aapko is README mein "Troubleshooting" (Errors fix karne ka) section bhi chahiye?***
-#cmd ```bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/All.sh)
+#cmd
+
+```bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/All.sh)
