@@ -1,0 +1,37 @@
+#!/bin/bash
+# ==============================================
+# 💾 Pterodactyl Backup Manager
+# ==============================================
+
+set -e
+
+# Define paths
+PANEL_DIR="/var/www/pterodactyl"   # Change if your panel path is different
+BACKUP_DIR="/opt/ptero-backups"
+DB_NAME="pterodactyl"              # Change if your DB name is different
+DB_USER="ptero_user"               # Change if your DB user is different
+DB_PASS="your_db_password"         # Change if your DB password is different
+
+# Create backup folder if it doesn't exist
+mkdir -p $BACKUP_DIR
+
+# Timestamp for backup
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_NAME="backup_$TIMESTAMP.tar.gz"
+
+echo "🔄 === Creating Pterodactyl Backup ==="
+echo "📂 Backing up panel files..."
+tar -czf $BACKUP_DIR/panel_files_$TIMESTAMP.tar.gz -C $PANEL_DIR .
+
+echo "🗄️ Backing up database..."
+mysqldump -u $DB_USER -p$DB_PASS $DB_NAME > $BACKUP_DIR/db_$TIMESTAMP.sql
+
+echo "✅ Compressing everything into one archive..."
+tar -czf $BACKUP_DIR/$BACKUP_NAME -C $BACKUP_DIR panel_files_$TIMESTAMP.tar.gz db_$TIMESTAMP.sql
+
+# Optional: remove individual files after archive
+rm $BACKUP_DIR/panel_files_$TIMESTAMP.tar.gz $BACKUP_DIR/db_$TIMESTAMP.sql
+
+echo "🎉 Backup complete!"
+echo "💾 Saved as: $BACKUP_DIR/$BACKUP_NAME"
+echo "✨ Made with ❤️ by Para777 ✨"
