@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# --------------------------
+#  HVM V3 AUTO INSTALLER
+#  Made with ❤️ by shadow 
+# --------------------------
+
+echo "🔥 Welcome to HVM V3 Auto Installer"
+echo ""
+
+# ---- Ask for admin details ----
+read -p "👤 Enter Admin Username: " ADMIN_USER
+read -p "🔐 Enter Admin Password: " ADMIN_PASS
+
+# ---- Install required packages ----
+echo "📦 Installing dependencies..."
+apt install sudo -y
+apt install python3-full -y
+apt install pip -y
+apt update -y
+
+echo "🐍 Installing Python modules..."
+pip3 install flask flask-socketio flask_login docker paramiko python-dotenv psutil flask-limiter
+
+# ---- Clone source ----
+echo "📥 Downloading HVM V3..."
+git clone https://github.com/ItsMePara123/HVMV3-CRACKED
+cd HVMV3-CRACKED || exit
+
+clear
+
+# ---- Generate License Key ----
+LICENSE_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
+echo "🔑 License Key Generated: $LICENSE_KEY"
+echo ""
+
+echo "❤️ This Is The License Key Of HVM V3"
+echo "😎 Cracked By Para"
+echo ""
+
+# ---- Create ENV file ----
+echo "⚙️ Creating .env configuration..."
+
+cat <<EOF > .env
+#Panel Configuration
+SECRET_KEY=$LICENSE_KEY
+ADMIN_USERNAME=$ADMIN_USER
+ADMIN_PASSWORD=$ADMIN_PASS
+PANEL_NAME=HVM VPS Panel
+WATERMARK=HVM VPS Service
+WELCOME_MESSAGE=Welcome to HVM VPS Panel
+
+#VPS Configuration
+MAX_VPS_PER_USER=5
+DEFAULT_OS_IMAGE=ubuntu:22.04
+DOCKER_NETWORK=hvm_network
+MAX_CONTAINERS=50
+
+#Server Configuration
+SERVER_IP=127.0.0.1
+SERVER_PORT=3000
+DEBUG=False
+
+#Email Configuration (Optional)
+SMTP_SERVER=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=user@example.com
+SMTP_PASS=your-smtp-password
+NOTIFICATION_EMAIL=admin@example.com
+EOF
+
+echo ""
+echo "🚀 Starting HVM V3..."
+python3 hvm.py
