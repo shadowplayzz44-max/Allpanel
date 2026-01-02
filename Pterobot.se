@@ -1,0 +1,28 @@
+#!/bin/bash
+# ==============================================
+# 🚀 Pterodactyl Bot One-Click Setup By Shadow
+# ==============================================
+
+set -e
+
+echo "🔄 === Updating system ==="
+sudo apt update -y
+sudo apt install python3
+sudo apt install pip
+clear
+
+echo "📥 === Cloning Pterodactyl Bot Repository ==="
+git clone https://github.com/ParaNoob123/Pterodactyl-Bot
+
+echo "⚙️ === Setup Reminder ==="
+echo "📝 Please edit the config file and replace the following:"
+echo "   🔗  PTERO_URL"
+echo "   🔑  PTERO_API_KEY"
+echo "   🥚  EGG_ID"
+echo "   🤖  DISCORD_BOT_TOKEN"
+echo ""
+echo "✨ After editing, just run your bot with:"
+echo "   cd Pterodactyl-Bot && python3 PteroBot.py"
+echo ""
+echo "✅🎉 Pterodactyl Bot setup complete!"
+echo "✨ Made with ❤️ by Para777 ✨"
