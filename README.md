@@ -27,4 +27,4 @@ Apne server terminal par niche diye gaye commands ko run karein:
  * Virtualization: KVM support (Convoy ke liye zaroori hai).
  * Internet: Stable connection dependencies download karne ke liye.
 Kya aap chahte hain ki main script mein "Self-Update" feature add karun jo naye addons auto-detect kar sake?
-``` bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/All.sh)
+```bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/All.sh)```
