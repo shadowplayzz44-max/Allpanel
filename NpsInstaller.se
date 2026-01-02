@@ -1,0 +1,68 @@
+#!/bin/bash
+
+clear
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo " 🚀 NPS One-Click Installer Shadow"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+read -p "👉 Enter NPS Panel Port (example: 9080): " NPS_PORT
+read -p "👉 Enter Admin Password: " ADMIN_PASS
+
+INSTALL_DIR="/usr/local/nps"
+
+echo ""
+echo "📦 Installing dependencies..."
+apt update -y
+apt install -y wget tar ufw
+
+echo ""
+echo "📥 Downloading latest NPS..."
+wget -O /root/nps.tar.gz https://github.com/ehang-io/nps/releases/latest/download/linux_amd64_server.tar.gz
+
+echo "📂 Extracting..."
+mkdir -p /root/nps_extract
+tar -zxvf /root/nps.tar.gz -C /root/nps_extract
+
+echo "📁 Installing into /usr/local/nps"
+rm -rf $INSTALL_DIR
+mkdir -p $INSTALL_DIR
+mv /root/nps_extract/* $INSTALL_DIR/
+
+echo "⚙️ Updating configuration..."
+sed -i "s|web_port =.*|web_port = ${NPS_PORT}|g" $INSTALL_DIR/conf/nps.conf
+sed -i "s|web_password =.*|web_password = ${ADMIN_PASS}|g" $INSTALL_DIR/conf/nps.conf
+
+echo "🔓 Opening firewall port..."
+ufw allow ${NPS_PORT} >/dev/null 2>&1
+
+echo "🛠 Creating systemd service..."
+
+cat > /etc/systemd/system/nps.service <<EOF
+[Unit]
+Description=NPS Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/nps/nps
+WorkingDirectory=/usr/local/nps
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable --now nps
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo " ✅ NPS Installed Successfully!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo " 🌐 Panel URL: http://YOUR_SERVER_IP:${NPS_PORT}"
+echo " 👤 Username: admin"
+echo " 🔑 Password: ${ADMIN_PASS}"
+echo " 📁 Installed in: /usr/local/nps"
+echo " 🛠 Service: systemctl restart nps"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
