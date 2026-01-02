@@ -20,7 +20,7 @@ Yeh ek power-packed automation script hai jo Pterodactyl, Wings, Convoy, aur Blu
 🚀 How to Install & Run
 Apne VPS terminal par niche diye gaye steps follow karein:
 # 1. cmd
-bash <(curl -s https://github.com/shadowplayzz44-max/Allpanel/main/All.sh
+bash <(curl -s https://github.com/shadowplayzz44-max/Allpanel/main/All.sh)
 
 📖 Menu Options Explained
 | Option | Function | Important Note |
