@@ -1,0 +1,20 @@
+#!/bin/bash
+# ==============================================
+# 🌐 Nginx Reload / Restart Script by shadow 
+# ==============================================
+
+set -e
+
+echo "⚡ === Reloading Nginx Configuration ==="
+sudo nginx -t && sudo systemctl reload nginx
+sleep 1
+
+echo "🔄 === Restarting Nginx Service ==="
+sudo systemctl restart nginx
+sleep 1
+
+echo "📝 === Checking Nginx Status ==="
+sudo systemctl status nginx --no-pager | head -n 10
+
+echo "✅🎉 Nginx reload & restart complete!"
+echo "✨ Made with ❤️ by Shadow ✨"
