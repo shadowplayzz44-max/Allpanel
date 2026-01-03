@@ -15,7 +15,10 @@ bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/mai
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/Menu)
 ```
-
+this cmd for bot
+```bash
+bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/Shadowbot
+```
 ---
 
 ## ⚙️ Supported System
