@@ -1,0 +1,179 @@
+#!/bin/bash
+
+# Colors
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+CYAN="\e[36m"
+WHITE="\e[37m"
+RESET="\e[0m"
+BOLD="\e[1m"
+MAGENTA="\e[35m"
+
+# Check if curl is installed
+check_curl() {
+if ! command -v curl &>/dev/null; then
+echo -e "${RED}${BOLD}Error: curl is not installed.${RESET}"
+echo -e "${YELLOW}Installing curl...${RESET}"
+if command -v apt-get &>/dev/null; then
+sudo apt-get update && sudo apt-get install -y curl
+elif command -v yum &>/dev/null; then
+sudo yum install -y curl
+elif command -v dnf &>/dev/null; then
+sudo dnf install -y curl
+else
+echo -e "${RED}Could not install curl automatically. Please install it manually.${RESET}"
+exit 1
+fi
+echo -e "${GREEN}curl installed successfully!${RESET}"
+fi
+}
+
+# Function to run remote scripts
+run_remote_script() {
+local url=$1
+local script_name=$(basename "$url" .sh)
+script_name=$(echo "$script_name" | sed 's/.*/\u&/')
+
+echo -e "${YELLOW}${BOLD}Running: ${CYAN}${script_name}${RESET}"
+check_curl
+
+local temp_script=$(mktemp)
+echo -e "${YELLOW}Downloading script...${RESET}"
+
+if curl -fsSL "$url" -o "$temp_script"; then
+echo -e "${GREEN}✔ Download successful${RESET}"
+chmod +x "$temp_script"
+bash "$temp_script"
+local exit_code=$?
+rm -f "$temp_script"
+if [ $exit_code -eq 0 ]; then
+echo -e "${GREEN}✔ Script executed successfully${RESET}"
+else
+echo -e "${RED}✘ Script execution failed with exit code: $exit_code${RESET}"
+fi
+else
+echo -e "${RED}✘ Failed to download script${RESET}"
+fi
+echo
+read -p "Press Enter to continue..."
+}
+
+# Function to show system info
+system_info() {
+echo -e "${BOLD}SYSTEM INFORMATION${RESET}"
+echo "Hostname: $(hostname)"
+echo "User: $(whoami)"
+echo "Directory: $(pwd)"
+echo "System: $(uname -srm)"
+echo "Uptime: $(uptime -p)"
+echo "Memory: $(free -h | awk '/Mem:/ {print $3"/"$2}')"
+echo "Disk: $(df -h / | awk 'NR==2 {print $3"/"$2 " ("$5")"}')"
+echo
+read -p "Press Enter to continue..."
+}
+
+# Function to show Cloudflare settings
+cloudflare_settings() {
+clear
+echo -e "${MAGENTA}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e " 🌐 ${CYAN}${BOLD}CLOUDFLARE SETTINGS${RESET}"
+echo -e "${MAGENTA}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n"
+
+echo -e " ⚙️ ${GREEN}PANEL SETTINGS${RESET}"
+echo -e " 🔒 Type : ${CYAN}HTTPS${RESET}"
+echo -e " 🖥️ Service: ${CYAN}localhost${RESET}\n"
+
+echo -e " ⚙️ ${GREEN}NODE SETTINGS${RESET}"
+echo -e " 🔒 Type : ${CYAN}HTTPS${RESET}"
+echo -e " 🖥️ Service: ${CYAN}localhost:8080${RESET}\n"
+
+echo -e "${MAGENTA}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+read -p "Press Enter to continue..."
+}
+
+# Function to generate and display menu
+show_menu() {
+clear
+menu_content=$(cat <<EOF
+${BOLD}========== MAIN MENU ==========${RESET}
+${BOLD}1. Ptero Panel${RESET}
+${BOLD}2. Ptero Wing${RESET}
+${BOLD}3. Ptero Update${RESET}
+${BOLD}4. Ptero Uninstall${RESET}
+${BOLD}5. Blueprint Install${RESET}
+${BOLD}6. Cloudflare${RESET}
+${BOLD}7. Theme Install${RESET}
+${BOLD}8. Playit Setup${RESET}
+${BOLD}9. Cloudflare Settings${RESET}
+${BOLD}10. System Info${RESET}
+${BOLD}11. Ptero Bot${RESET}
+${BOLD}12. Back Up${RESET}
+${BOLD}13. Nginx Reload${RESET}
+${BOLD}14. Ptero Restart${RESET}
+${BOLD}15. Vpsdeploybot${RESET}
+${BOLD}16. Github Vps Maker${RESET}
+${BOLD}17. SSL GENRATOR${RESET}
+${BOLD}18. Jexcatyl Panel${RESET}
+${BOLD}19. Jexcatyl Node${RESET}
+${BOLD}20. Cockpit Install${RESET}
+${BOLD}21. Auto Sudo${RESET}
+${BOLD}22. Swap Ram${RESET}
+${BOLD}23. Paymenter Install${RESET}
+${BOLD}24. MythicalDash Install${RESET}
+${BOLD}25. Rdp Installion${RESET}
+${BOLD}26. Lxc Install${RESET}
+${BOLD}27. SSH FIX${RESET}
+${BOLD}28. Vm Create Docker${RESET}
+${BOLD}29. Tailscale Install${RESET}
+${BOLD}30. HVM V3 INSTALLION${RESET}
+${BOLD}0. Exit${RESET}
+${BOLD}===============================${RESET}
+EOF
+)
+echo -e "${CYAN}${menu_content}${RESET}"
+echo -ne "${BOLD}Enter your choice [1-10]: ${RESET}"
+
+# Save menu (with bold effect) to text file
+echo -e "$menu_content" > menu.txt
+}
+
+# Main loop
+while true; do
+show_menu
+read -r choice
+case $choice in
+1) run_remote_script "https://raw.githubusercontent.com/ItsMePara123/GG/refs/heads/main/pteroinstall" ;;
+2) run_remote_script "https://raw.githubusercontent.com/ItsMePara123/GG/refs/heads/main/wingsptero" ;;
+3) run_remote_script "https://raw.githubusercontent.com/ItsMePara123/GG/refs/heads/main/updateptero" ;;
+4) run_remote_script "https://raw.githubusercontent.com/ItsMePara123/GG/refs/heads/main/uninstallptero" ;;
+5) run_remote_script "https://raw.githubusercontent.com/ParaNoob123/Blueprint/refs/heads/main/paracom" ;;
+6) run_remote_script "https://raw.githubusercontent.com/ItsMePara123/GG/refs/heads/main/cloudflareinstall" ;;
+7) run_remote_script "https://raw.githubusercontent.com/ItsMePara123/GG/refs/heads/main/thememenu" ;;
+8) run_remote_script "https://raw.githubusercontent.com/ItsMePara123/GG/refs/heads/main/playit" ;;
+9) cloudflare_settings ;;
+10) system_info ;;
+11) run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/Pterobot.se" ;;
+12) run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/Pterobackup" ;;
+13) run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/NginxReloader" ;;
+14) run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/Pterorestart" ;;
+15) run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/Vpsdeploybot" ;;
+16)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/VpsMenu" ;;
+17)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/SSL%20GENRATOR" ;;
+18)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/Jexactyl.sh" ;;
+19)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/Wing" ;;
+20)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/CockpitInstaller" ;;
+21)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/Autosudo" ;;
+22)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/SwapRam" ;;
+23)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/paymenter.se." ;;
+24)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/MythicalDash" ;;
+25)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/Rdp" ;;
+26)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/lxcinstall" ;;
+27)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/sshfix" ;;
+28)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/dockercontainer" ;;
+29)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/tailscale" ;;
+30)run_remote_script "https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/refs/heads/main/hvminstaller.se" ;;
+0) echo "Exiting..."; exit 0 ;;
+*) echo -e "${RED}${BOLD}Invalid option!${RESET}"; read -p "Press Enter to continue..." ;;
+esac
+done
