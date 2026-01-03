@@ -12,6 +12,8 @@ Bas ye command VPS me paste karo:
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/Hub)
 ```
+```bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/Menu)
+```
 
 ---
 
