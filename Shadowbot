@@ -1,0 +1,49 @@
+#!/bin/bash
+
+echo "=========================================="
+echo "      VPS Deploy Bot Installer"
+echo "      Made By Shadow Prince"
+echo "=========================================="
+
+# Clone bot
+echo "Shadowbot cloning..."
+git clone https://github.com/shadowplayzz44-max/Shadowbot.git
+
+cd Shadowbot || { echo "Clone failed!"; exit 1; }
+
+echo "Installing requirements..."
+pip install discord.py
+
+# User Input
+read -p "Enter Your Discord Bot Token: " TOKEN
+read -p "Enter Your Guild ID: " GUILD
+read -p "Enter Your Client ID: " CLIENT
+
+CONFIG_FILE="config.json"
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "config.json not found! Creating new..."
+    cat > config.json <<EOF
+{
+  "TOKEN": "",
+  "GUILD_ID": "",
+  "CLIENT_ID": ""
+}
+EOF
+fi
+
+# Replace values
+sed -i "s|\"TOKEN\": \".*\"|\"TOKEN\": \"$TOKEN\"|g" $CONFIG_FILE
+sed -i "s|\"GUILD_ID\": \".*\"|\"GUILD_ID\": \"$GUILD\"|g" $CONFIG_FILE
+sed -i "s|\"CLIENT_ID\": \".*\"|\"CLIENT_ID\": \"$CLIENT\"|g" $CONFIG_FILE
+
+echo "=========================================="
+echo " Updating Done!"
+echo "=========================================="
+
+echo "Starting Bot..."
+python3 bot.py
+
+echo "=========================================="
+echo " Your VPS Bot is Running 🎉"
+echo "=========================================="
