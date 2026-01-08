@@ -17,7 +17,7 @@ bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/mai
 ```
 this cmd for bot
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/Shadowbot
+bash <(curl -s https://raw.githubusercontent.com/shadowplayzz44-max/Allpanel/main/Shadowbot)
 ```
 ---
 
